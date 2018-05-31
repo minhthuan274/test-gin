@@ -55,8 +55,9 @@ func postReview(c *gin.Context) {
 	userID := c.GetString("userID")
 	oUserID := bson.ObjectIdHex(userID)
 	point, _ := strconv.Atoi(c.Query("point"))
+	ID := bson.NewObjectId()
 	err := db.C(models.CollectionReview).Insert(models.Review{
-		bson.NewObjectId(),
+		ID,
 		oUserID,
 		bson.ObjectIdHex(c.Query("merchant")),
 		c.Query("feedback"),
@@ -65,10 +66,11 @@ func postReview(c *gin.Context) {
 
 	if err != nil {
 		c.JSON(http.StatusNotAcceptable, err)
+		return
 	}
 
 	reviews := models.Review{}
-	_ = db.C(models.CollectionReview).Find(bson.M{"user": oUserID}).One(&reviews)
+	_ = db.C(models.CollectionReview).Find(bson.M{"_id": ID}).One(&reviews)
 
 	c.JSON(http.StatusCreated, reviews)
 }
