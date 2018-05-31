@@ -2,7 +2,6 @@ package main
 
 import (
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/minhthuan274/test-gin/db"
@@ -54,14 +53,15 @@ func postReview(c *gin.Context) {
 	db := c.MustGet("db").(*mgo.Database)
 	userID := c.GetString("userID")
 	oUserID := bson.ObjectIdHex(userID)
-	point, _ := strconv.Atoi(c.Query("point"))
 	ID := bson.NewObjectId()
+	var json models.ReviewJson
+	c.BindJSON(&json)
 	err := db.C(models.CollectionReview).Insert(models.Review{
 		ID,
 		oUserID,
-		bson.ObjectIdHex(c.Query("merchant")),
-		c.Query("feedback"),
-		point,
+		bson.ObjectIdHex(json.Merchant),
+		json.Feedback,
+		json.Point,
 	})
 
 	if err != nil {
