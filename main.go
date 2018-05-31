@@ -65,12 +65,12 @@ func postReview(c *gin.Context) {
 	})
 
 	if err != nil {
-		c.JSON(http.StatusNotAcceptable, err)
+		c.JSON(http.StatusNotAcceptable, gin.H{"error": err.Error()})
 		return
 	}
 
 	reviews := models.Review{}
 	_ = db.C(models.CollectionReview).Find(bson.M{"_id": ID}).One(&reviews)
 
-	c.JSON(http.StatusCreated, reviews)
+	c.JSON(http.StatusCreated, gin.H{"review": reviews})
 }
