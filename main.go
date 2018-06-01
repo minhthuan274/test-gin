@@ -46,7 +46,7 @@ func main() {
 
 func getHome(c *gin.Context) {
 	userID := c.GetString("userID")
-	c.JSON(http.StatusOK, userID)
+	c.JSON(http.StatusOK, gin.H{"userID": userID})
 }
 
 func postReview(c *gin.Context) {
