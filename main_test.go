@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -8,6 +9,37 @@ import (
 
 	"github.com/stretchr/testify/assert"
 )
+
+func TestAddNewReviewButNotValidBody(t *testing.T) {
+	router := setupRouter()
+	body := bytes.NewBuffer([]byte("{\"foo\":\"bar\"}"))
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("POST", "/api/v3/reviews", body)
+
+	req.Header.Set("Authorization", getToken())
+
+	router.ServeHTTP(w, req)
+
+	assert.Equal(t, http.StatusBadRequest, w.Code)
+}
+
+func TestAddNewReviewAndSucess(t *testing.T) {
+	router := setupRouter()
+	body := bytes.NewBuffer([]byte("{\"merchant\":\"56f8f6bdb7bfb8a979db12b5\", \"feedback\": \"Quán nấu ăn ngon\", \"point\": 4}"))
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("POST", "/api/v3/reviews", body)
+
+	req.Header.Set("Authorization", getToken())
+
+	router.ServeHTTP(w, req)
+
+	assert.Equal(t, http.StatusCreated, w.Code)
+	// var response map[string]string
+	// _ = json.Unmarshal([]byte(w.Body.String()), &response)
+
+}
 
 func TestHomeWithUnauthorized(t *testing.T) {
 	// Grab our router
