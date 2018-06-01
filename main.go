@@ -12,11 +12,6 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-type User struct {
-	ID   bson.ObjectId `json:"id" bson:"_id,omitempty"`
-	Name string        `json:"name" bson:"name"`
-}
-
 func init() {
 	db.Connect()
 }
