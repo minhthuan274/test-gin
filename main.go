@@ -33,7 +33,7 @@ func setupRouter() *gin.Engine {
 	v3.Use(middleware.Auth())
 	{
 		v3.POST("/reviews", postReview)
-		// v3.GET("/reviews/")
+		v3.GET("/reviews/:reviewID", detailReview)
 		v3.GET("/home", getHome)
 	}
 
@@ -49,6 +49,24 @@ func main() {
 func getHome(c *gin.Context) {
 	userID := c.GetString("userID")
 	c.JSON(http.StatusOK, gin.H{"userID": userID})
+}
+
+func detailReview(c *gin.Context) {
+	db := c.MustGet("db").(*mgo.Database)
+	oReviewID := bson.ObjectIdHex(c.Param("reviewID"))
+
+	var review models.ReviewDetail
+	err := db.C(models.CollectionReview).Find(bson.M{"_id": oReviewID}).One(&review)
+
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+
+	_ = db.C(models.CollectionUser).Find(bson.M{"_id": review.UserID}).One(&review.User)
+	_ = db.C(models.CollectionMerchant).Find(bson.M{"_id": review.MerchantID}).One(&review.Merchant)
+
+	c.JSON(http.StatusOK, gin.H{"review": review})
 }
 
 func postReview(c *gin.Context) {
