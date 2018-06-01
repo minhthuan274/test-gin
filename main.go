@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/minhthuan274/test-gin/db"
@@ -32,6 +33,7 @@ func setupRouter() *gin.Engine {
 	v3.Use(middleware.Auth())
 	{
 		v3.POST("/reviews", postReview)
+		// v3.GET("/reviews/")
 		v3.GET("/home", getHome)
 	}
 
@@ -62,6 +64,7 @@ func postReview(c *gin.Context) {
 			bson.ObjectIdHex(json.Merchant),
 			json.Feedback,
 			json.Point,
+			time.Now(),
 		})
 
 		if err != nil {
