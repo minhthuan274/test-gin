@@ -55,16 +55,20 @@ func postReview(c *gin.Context) {
 	oUserID := bson.ObjectIdHex(userID)
 	ID := bson.NewObjectId()
 	var json models.ReviewJson
-	c.BindJSON(&json)
-	err := db.C(models.CollectionReview).Insert(models.Review{
-		ID,
-		oUserID,
-		bson.ObjectIdHex(json.Merchant),
-		json.Feedback,
-		json.Point,
-	})
+	if err := c.BindJSON(&json); err == nil {
+		err := db.C(models.CollectionReview).Insert(models.Review{
+			ID,
+			oUserID,
+			bson.ObjectIdHex(json.Merchant),
+			json.Feedback,
+			json.Point,
+		})
 
-	if err != nil {
+		if err != nil {
+			c.JSON(http.StatusNotAcceptable, gin.H{"error": err.Error()})
+			return
+		}
+	} else {
 		c.JSON(http.StatusNotAcceptable, gin.H{"error": err.Error()})
 		return
 	}

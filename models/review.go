@@ -7,7 +7,7 @@ const (
 )
 
 type Review struct {
-	ID       bson.ObjectId `json:"id" bson:"_id,omitempty"`
+	ID       bson.ObjectId `json:"_id" bson:"_id,omitempty"`
 	User     bson.ObjectId `json:"user" bson:"user,omitempty"`
 	Merchant bson.ObjectId `json:"merchant" bson:"merchant,omitempty" form:"merchant"`
 	Feedback string        `json:"feedback" bson:"feedback" form:"feedback"`
@@ -15,7 +15,7 @@ type Review struct {
 }
 
 type ReviewJson struct {
-	Merchant string `json:"merchant" form:"merchant"`
-	Feedback string `json:"feedback" form:"feedback"`
-	Point    int    `json:"point" form:"point"`
+	Merchant string `json:"merchant" binding:"required" form:"merchant"`
+	Feedback string `json:"feedback" binding:"required" form:"feedback"`
+	Point    int    `json:"point" binding:"required" form:"point"`
 }
